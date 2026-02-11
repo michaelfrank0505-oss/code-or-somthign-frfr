@@ -3,125 +3,490 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Viewer: Games & Movies</title>
+    <title>Google Classroom</title>
     <style>
-        :root {
-            --accent: #FF42A5; /* From your TikTok code */
-            --bg: #0f0f0f;
-            --nav-bg: #1a1a1a;
-        }
-
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Segoe UI', sans-serif;
-            overflow: hidden;
+            box-sizing: border-box;
         }
 
-        /* Top Navigation Bar */
+        :root {
+            --accent: #FF42A5;
+            --accent-light: #FF69B4;
+            --accent-dark: #E60890;
+            --bg: #0f0f0f;
+            --bg-light: #1a1a1a;
+            --nav-bg: #0d0d0d;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --border-color: #2a2a2a;
+            --shadow: 0 8px 32px rgba(255, 66, 165, 0.1);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            background: linear-gradient(135deg, var(--bg) 0%, #1a0a20 100%);
+            color: var(--text-primary);
+            font-family: 'Segoe UI', 'Roboto', 'Google Sans', sans-serif;
+            overflow: hidden;
+            font-smoothing: antialiased;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(255, 66, 165, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(255, 105, 180, 0.03) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+            animation: gradientShift 15s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(5deg); }
+        }
+
         nav {
             display: flex;
             align-items: center;
-            background: var(--nav-bg);
-            padding: 10px 20px;
-            height: 60px;
+            background: linear-gradient(180deg, var(--nav-bg) 0%, rgba(13, 13, 13, 0.8) 100%);
+            padding: 0 20px;
+            height: 70px;
             box-sizing: border-box;
             border-bottom: 2px solid var(--accent);
-            gap: 10px;
+            gap: 15px;
+            backdrop-filter: blur(10px);
+            box-shadow: var(--shadow);
+            position: relative;
+            z-index: 1000;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .logo {
-            font-weight: bold;
+            font-weight: 800;
             color: var(--accent);
-            margin-right: 20px;
-            font-size: 1.2rem;
+            margin-right: 30px;
+            font-size: 1.4rem;
+            letter-spacing: 1px;
+            text-shadow: 0 0 20px var(--accent);
+            cursor: pointer;
+            transition: var(--transition);
+            animation: glow 2s ease-in-out infinite;
+            user-select: none;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+            text-shadow: 0 0 30px var(--accent);
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px var(--accent); }
+            50% { text-shadow: 0 0 30px var(--accent), 0 0 40px var(--accent); }
         }
 
         .nav-btn {
-            background: #333;
-            border: none;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 5px;
+            background: linear-gradient(135deg, var(--bg-light), #2a2a3a);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 10px 22px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: var(--transition);
             font-size: 14px;
+            font-weight: 600;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 66, 165, 0.3), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .nav-btn:hover::before {
+            left: 100%;
         }
 
         .nav-btn:hover {
-            background: var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border-color: var(--accent);
+            box-shadow: 0 0 20px rgba(255, 66, 165, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
         }
 
         .nav-btn.active {
-            background: var(--accent);
-            box-shadow: 0 0 10px var(--accent);
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            border-color: var(--accent);
+            box-shadow: 0 0 25px var(--accent), inset 0 0 15px rgba(255, 255, 255, 0.2);
+            animation: pulse 1.5s ease-in-out infinite;
         }
 
-        /* The Frame Container */
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 25px var(--accent), inset 0 0 15px rgba(255, 255, 255, 0.2); }
+            50% { box-shadow: 0 0 35px var(--accent), inset 0 0 25px rgba(255, 255, 255, 0.3); }
+        }
+
+        .nav-separator {
+            width: 1px;
+            height: 30px;
+            background: linear-gradient(180deg, transparent, var(--border-color), transparent);
+            margin: 0 5px;
+        }
+
+        .nav-spacer {
+            flex: 1;
+        }
+
+        .fs-btn {
+            background: linear-gradient(135deg, #2a2a3a, #1a1a2a);
+            border: 2px solid var(--accent);
+            color: var(--accent);
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            position: relative;
+        }
+
+        .fs-btn:hover {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: #000;
+            box-shadow: 0 0 20px rgba(255, 66, 165, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .cloak-btn {
+            background: linear-gradient(135deg, #2a2a3a, #1a1a2a);
+            border: 2px solid #4a4a6a;
+            color: #8a8aaa;
+            padding: 10px 22px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            position: relative;
+        }
+
+        .cloak-btn:hover {
+            background: linear-gradient(135deg, #3a3a4a, #2a2a3a);
+            border-color: #6a6a8a;
+            color: var(--text-primary);
+            box-shadow: 0 0 15px rgba(100, 100, 150, 0.3);
+            transform: translateY(-2px);
+        }
+
         #content-area {
             width: 100%;
-            height: calc(100vh - 60px);
+            height: calc(100vh - 70px);
             background: #000;
+            position: relative;
+            overflow: hidden;
         }
 
         iframe {
             width: 100%;
             height: 100%;
             border: none;
+            display: block;
         }
 
-        /* Fullscreen Toggle */
-        .fs-btn {
-            margin-left: auto;
-            background: transparent;
-            border: 1px solid #555;
-            color: #aaa;
+        /* Loading Animation */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999;
+        }
+
+        .loading::after {
+            content: '';
+            display: block;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 4px solid var(--border-color);
+            border-color: var(--accent) transparent var(--accent) transparent;
+            animation: spin 1.2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--bg-light), #2a2a3a);
+            border: 2px solid var(--accent);
+            color: var(--text-primary);
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(255, 66, 165, 0.3);
+            animation: slideUp 0.4s ease-out;
+            z-index: 2000;
+            max-width: 300px;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .toast.success {
+            border-color: #4ade80;
+        }
+
+        .toast.success::before {
+            content: '✓ '; 
+            color: #4ade80;
+            font-weight: bold;
+        }
+
+        /* Status Indicator */
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: statusBlink 2s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes statusBlink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            nav {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 10px;
+            }
+
+            .logo {
+                margin-right: 10px;
+                font-size: 1.2rem;
+            }
+
+            .nav-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+
+            .nav-separator {
+                display: none;
+            }
+
+            .fs-btn, .cloak-btn {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
         }
     </style>
 </head>
 <body>
 
 <nav>
-    <div class="logo">HUB-VIEW</div>
+    <div class="logo">📚 Classroom</div>
     
     <button class="nav-btn active" onclick="setView(this, 'https://yflix.to/home')">yFlix</button>
     <button class="nav-btn" onclick="setView(this, 'https://1movieshd.com')">1Movies</button>
-    <button class="nav-btn" onclick="setView(this, 'https://gn-math.dev')">GN-Math Games</button>
+    <button class="nav-btn" onclick="setView(this, 'https://gn-math.dev')">Math Games</button>
     
-    <button class="nav-btn fs-btn" onclick="toggleFullScreen()">Fullscreen</button>
+    <div class="nav-separator"></div>
+    
+    <div class="nav-spacer"></div>
+    
+    <button class="cloak-btn" onclick="cloakWindow()">🔒 Cloak Tab</button>
+    <button class="fs-btn" onclick="toggleFullScreen()">⛶ Fullscreen</button>
 </nav>
 
 <div id="content-area">
+    <div class="loading" id="loader" style="display:none;"></div>
     <iframe 
         id="main-frame" 
         src="https://yflix.to/home" 
-        allow="autoplay; fullscreen; encrypted-media" 
-        sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation">
+        allow="autoplay; fullscreen; encrypted-media; geolocation; microphone; camera" 
+        sandbox="allow-forms allow-pointer-lock allow-same-origin allow-scripts allow-top-navigation allow-modals">
     </iframe>
 </div>
 
 <script>
-    function setView(btn, url) {
-        // Update Iframe
-        document.getElementById('main-frame').src = url;
+    // Configuration
+    const CONFIG = {
+        cloakTitle: 'Google Classroom',
+        cloakIcon: '📚',
+        originalTitle: document.title,
+        isCloaked: false
+    };
 
-        // Update Active Button UI
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+    // Navigation
+    function setView(btn, url) {
+        showLoader(true);
+        
+        setTimeout(() => {
+            document.getElementById('main-frame').src = url;
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('active');
+            });
+            btn.classList.add('active');
+            
+            showToast(`Loaded: ${btn.textContent}`);
+            showLoader(false);
+        }, 300);
     }
 
+    // Fullscreen Toggle
     function toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
+        try {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    showToast(`Fullscreen error: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
             }
+        } catch (e) {
+            showToast('Fullscreen not available');
         }
     }
+
+    // Cloaking Feature
+    function cloakWindow() {
+        CONFIG.isCloaked = !CONFIG.isCloaked;
+        
+        if (CONFIG.isCloaked) {
+            // Store original data
+            const originalTitle = document.title;
+            const originalIcon = document.querySelector('link[rel="icon"]');
+            
+            // Apply cloaking
+            document.title = CONFIG.cloakTitle;
+            
+            // Change favicon
+            const favicon = document.createElement('link');
+            favicon.rel = 'icon';
+            favicon.href = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">📚</text></svg>';
+            document.head.appendChild(favicon);
+            
+            // Update button
+            document.querySelector('.cloak-btn').textContent = '🔓 Uncloak Tab';
+            document.querySelector('.cloak-btn').style.borderColor = '#4ade80';
+            document.querySelector('.cloak-btn').style.color = '#4ade80';
+            
+            showToast('✓ Tab cloaked as Google Classroom');
+        } else {
+            // Remove cloaking
+            document.title = CONFIG.originalTitle;
+            
+            const favicons = document.querySelectorAll('link[rel="icon"]');
+            favicons.forEach(f => f.remove());
+            
+            // Update button
+            document.querySelector('.cloak-btn').textContent = '🔒 Cloak Tab';
+            document.querySelector('.cloak-btn').style.borderColor = '#4a4a6a';
+            document.querySelector('.cloak-btn').style.color = '#8a8aaa';
+            
+            showToast('✓ Tab uncloaked');
+        }
+    }
+
+    // UI Helpers
+    function showLoader(show) {
+        document.getElementById('loader').style.display = show ? 'block' : 'none';
+    }
+
+    function showToast(message) {
+        const toast = document.createElement('div');
+        toast.className = 'toast';
+        if (message.includes('✓')) toast.classList.add('success');
+        toast.textContent = message;
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideUp 0.4s ease-out reverse';
+            setTimeout(() => toast.remove(), 400);
+        }, 3000);
+    }
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            if (e.key === 'l') {
+                e.preventDefault();
+                cloakWindow();
+            }
+            if (e.key === 'f') {
+                e.preventDefault();
+                toggleFullScreen();
+            }
+        }
+    });
+
+    // Initialize
+    window.addEventListener('load', () => {
+        showToast('🎬 Hub View Loaded - Press Ctrl+L to cloak');
+    });
+
+    // Prevent right-click on sensitive areas (optional security)
+    document.addEventListener('contextmenu', (e) => {
+        if (e.target.closest('nav')) {
+            e.preventDefault();
+        }
+    });
+
+    // Handle iframe load events
+    document.getElementById('main-frame').addEventListener('load', () => {
+        showLoader(false);
+    });
+
+    document.getElementById('main-frame').addEventListener('error', () => {
+        showToast('⚠ Failed to load content');
+        showLoader(false);
+    });
 </script>
 
 </body>
